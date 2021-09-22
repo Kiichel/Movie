@@ -1,6 +1,7 @@
 package com.example.movie
 
 import com.example.movie.retrofit.RetrofitClient
+import com.example.movie.retrofit.RetrofitServices
 
 object Common {
     private val BASE_URL =
