@@ -1,7 +1,11 @@
 package com.example.movie
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -20,7 +24,6 @@ class MoviesListActivity : AppCompatActivity() {
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var adapter: RecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var but: Button
     private var ctx: Context = this
 
     private val apiKey = "gvQKO6QDtVxq2DAVz1euMcRM5TXRgsYh"
@@ -35,7 +38,6 @@ class MoviesListActivity : AppCompatActivity() {
         mService = Common.retrofitService
 
         recyclerView = findViewById(R.id.recyclerViewMoviesId)
-        but = findViewById(R.id.downloadButtonId)
 
         layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
@@ -44,6 +46,7 @@ class MoviesListActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
         recyclerView.adapter = adapter
 
+        setRecyclerViewScrollListener()
         getAllMovieList()
     }
 
@@ -56,6 +59,10 @@ class MoviesListActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Root>, response: Response<Root>) {
                 val root = response.body()
                 val results = root?.results
+
+                if(root?.num_results == null) {
+                    return
+                }
 
                 if (results != null) {
                     for (result in results) {
@@ -71,17 +78,27 @@ class MoviesListActivity : AppCompatActivity() {
                 offset += root?.num_results!!
 
                 hasMore = root.has_more
-                if (hasMore) {
-                    but.visibility = View.VISIBLE
-                } else {
-                    but.visibility = View.INVISIBLE
-                }
                 adapter.notifyDataSetChanged()
             }
         })
     }
 
-    fun downloadButton(view: View) {
-        getAllMovieList()
+    private fun setRecyclerViewScrollListener() {
+        var scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                if (recyclerView != null) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                }
+
+                if (offset == lastVisibleItemPosition + 1 && hasMore) {
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.postDelayed({
+                        getAllMovieList()
+                    }, 100)
+                }
+            }
+        }
+        recyclerView.addOnScrollListener(scrollListener)
     }
 }

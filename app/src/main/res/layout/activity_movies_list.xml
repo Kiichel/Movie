@@ -9,23 +9,6 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMoviesId"
         android:layout_width="match_parent"
-        android:layout_height="680dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/recyclerViewMoviesId"
-        android:background="@color/black">
-
-        <Button
-            android:id="@+id/downloadButtonId"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:backgroundTint="@color/black"
-            android:onClick="downloadButton"
-            android:text="Загрузить еще"
-            android:textSize="17sp"
-            android:layout_gravity="center"/>
-    </LinearLayout>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
